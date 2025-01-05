@@ -1,5 +1,6 @@
 from typing import Final
 
+from pydantic.v1 import NoneStr
 from sqlmodel import SQLModel, Field, Relationship
 from app.project.model import Project
 from app.personal.model import Personal
@@ -34,13 +35,9 @@ class Assignment(AssignmentBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
 
 class AssignmentUpdate(SQLModel):
-    role: str | None
-    start_time: int | None
-    end_time: int | None
-    status: str  | None
-    project_id: int | None
-    personal_id: int | None
-
-class AssignmentWithProjectAndPerson(Assignment):
-    project: Project | None = Relationship(back_populates="assignments")
-    personal: Personal | None = Relationship(back_populates="assignments")
+    role: str | None = None
+    start_time: int | None = None
+    end_time: int | None = None
+    status: str  | None = None
+    project_id: int | None = None
+    personal_id: int | None = None
