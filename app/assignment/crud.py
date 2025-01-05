@@ -8,9 +8,7 @@ from app.project.model import Project
 
 def create_assignment(*, session: Session, new_assignment_data: Assignment) -> Assignment:
     new_assignment = Assignment.model_validate(new_assignment_data)
-
     validate_assignment_data(new_assignment_data.model_dump(exclude_unset=True))
-
     session.add(new_assignment)
     session.commit()
     session.refresh(new_assignment)
