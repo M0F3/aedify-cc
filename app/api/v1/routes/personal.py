@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
 from app.database.database import get_database
-from app.personal.model import Personal, PersonalCreate
 from app.personal.crud import create_personal
+from app.personal.model import Personal, PersonalCreate
 
 router = APIRouter(prefix="/personals", tags=["personals"])
 

@@ -3,7 +3,6 @@ from sqlmodel import Session
 
 from app.assignment.model import Assignment, AVAILABLE_ASSIGNMENT_STATUS, AVAILABLE_ASSIGNMENT_ROLES, AssignmentUpdate
 from app.personal.model import Personal
-from app.project.model import Project
 
 
 def create_assignment(*, session: Session, new_assignment_data: Assignment) -> Assignment:
@@ -15,25 +14,22 @@ def create_assignment(*, session: Session, new_assignment_data: Assignment) -> A
 
     return new_assignment
 
-def update_assignment(*, session: Session, updated_assignment_data: AssignmentUpdate, assignment_id: int) -> Assignment:
-    db_assignment = session.get(Assignment, assignment_id)
-    if not db_assignment:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Assignment does not exist")
-
-    updated_assignment = updated_assignment_data.model_dump(exclude_unset=True)
+def update_assignment(*, session: Session, data: AssignmentUpdate, assignment_id: int) -> Assignment:
+    db_assignment = get_assignment(session=session, assignment_id=assignment_id)
+    updated_assignment = data.model_dump(exclude_unset=True)
     validate_assignment_data(updated_assignment)
 
     if "personal_id" in updated_assignment.keys():
         if not session.get(Personal, updated_assignment["personal_id"]):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Personal does not exist")
 
-    for key, value in update_data.items():
-        setattr(db_item, key, value)
+    for key, value in updated_assignment.items():
+        setattr(db_assignment, key, value)
 
-    session.add(db_item)
+    session.add(db_assignment)
     session.commit()
-    session.refresh(db_item)
-    return db_item
+    session.refresh(db_assignment)
+    return db_assignment
 
 
 def validate_assignment_data(assignment_data: dict):
@@ -44,3 +40,10 @@ def validate_assignment_data(assignment_data: dict):
 
     if "role" in assignment_data.keys() and assignment_data["role"] not in AVAILABLE_ASSIGNMENT_ROLES:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Role does not exist")
+
+
+def get_assignment(*, session: Session, assignment_id: int) -> Assignment:
+    db_assignment = session.get(Assignment, assignment_id)
+    if not db_assignment:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Assignment does not exist")
+    return db_assignment
