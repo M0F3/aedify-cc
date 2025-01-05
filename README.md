@@ -26,7 +26,7 @@ docker compose up
 Start the application with
 
 ```bash
-fastapi dev --restart app/main.py
+fastapi dev --reload app/main.py
 ```
 
 The application is now running on localhost port 8000
